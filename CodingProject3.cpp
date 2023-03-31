@@ -1,5 +1,5 @@
-// CodingProject3.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+//Talia Pulsifer
+//03/31/2024
 
 #include <iostream>
 using namespace std;
