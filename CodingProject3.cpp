@@ -20,15 +20,18 @@ class Robot {
 		int distanceTraveled;
 		int currentSpeed;
 		char lastCommand;
-	//Constructor 
-	Robot() {
-		currentX = 0;
-		currentY = 0;
-		currentSpeed = 0;
-		distanceTraveled = 0;
-		lastCommand = 'Z';
-	}
-	public:
+		bool isStopped;
+	//Constructor
+public:
+		Robot() {
+			currentX = 0;
+			currentY = 0;
+			currentSpeed = 0;
+			distanceTraveled = 0;
+			lastCommand = 'Z';
+			isStopped = false;
+		}
+	
 		//Getters and Setters for private class member variables
 
 		string getName() {
@@ -44,33 +47,49 @@ class Robot {
 			return currentY;
 		}
 		void move(char direction) {
-			if (direction == lastCommand) {
-				if (currentSpeed < 4) {
-					currentSpeed += 1;
+			if(isStopped == true) {
+				if (direction == 'G') {
+					isStopped = false;
 				}
+				cout << name << " cannot move while stopped." << endl;
+				return;
 			}
-			else {
-				currentSpeed = 1;
-			}
-			switch (toupper(direction)) {
-				//Check the command and move accordingly
-			case 'U':
-				currentY += currentSpeed;
-				break;
-			case 'D':
-				currentY -= currentSpeed;
-				break;
-			case 'L':
-				currentX -= currentSpeed;
-				break;
-			case 'R':
-				currentX += currentSpeed;
+			while (isStopped == false) {
+				if (direction == lastCommand) {
+					if (currentSpeed < 4) {
+						currentSpeed += 1;
+					}
+				}
+				else {
+					currentSpeed = 1;
+				}
+				switch (toupper(direction)) {
+					//Check the command and move accordingly
+				case 'U':
+					currentY += currentSpeed;
+					break;
+				case 'D':
+					currentY -= currentSpeed;
+					break;
+				case 'L':
+					currentX -= currentSpeed;
+					break;
+				case 'R':
+					currentX += currentSpeed;
+					break;
+				case 'S':
+					isStopped = true;
+					currentSpeed = 1;
+					cout << name << " is now stopped." << endl;
+					return;
+				}
 				break;
 			}
 			//Update the distance traveled based on speed
 			distanceTraveled += currentSpeed;
 			//update lastcommand for the robot unless it was an invalid command!!!
 			lastCommand = direction;
+			return;
 		}
 		void setName(string newName) {
 			name = newName;
@@ -100,7 +119,7 @@ int findRobot(Robot** robotList, string name, int size) {
 void moveRobot(Robot* robot, char direction) {
 	//If this command is the same as the last command, speed increases
 	direction = toupper(direction);
-	char directions[] = { 'U', 'D', 'L', 'R' };
+	char directions[] = { 'U', 'D', 'L', 'R', 'S'};
 	char* directionsEnd = directions + sizeof(directions);
 	//See if the direction is in the options
 	if (directionsEnd == find(directions, directionsEnd, direction)) {
@@ -194,7 +213,8 @@ int main()
 					<< "D - Move the Robot down" << endl
 					<< "L - Move the Robot left" << endl
 					<< "R - Move the Robot right" << endl
-					<< "Which direction would you like to move?" << endl;
+					<< "S - Stop the Robot" << endl
+					<< "Which command would you like to do?" << endl;
 				cin >> direction;
 
 				//Move robot with the direction provided by user
