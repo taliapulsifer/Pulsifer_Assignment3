@@ -30,28 +30,53 @@ class Robot {
 	}
 	public:
 		//Getters and Setters for private class member variables
-		int getCurrentSpeed() {
-			return currentSpeed;
+
+		string getName() {
+			return name;
 		}
-		int getCurrentY() {
-			return currentY;
+		int getDistanceTraveled() {
+			return distanceTraveled;
 		}
 		int getCurrentX() {
 			return currentX;
 		}
-		int getcurrentDistance() {
-			return distanceTraveled;
+		int getCurrentY() {
+			return currentY;
 		}
-		char getLastCommand() {
-			return lastCommand;
-		}
-		string getName() {
-			return name;
+		void move(char direction) {
+			if (direction == lastCommand) {
+				if (currentSpeed < 4) {
+					currentSpeed += 1;
+				}
+			}
+			else {
+				currentSpeed = 1;
+			}
+			switch (toupper(direction)) {
+				//Check the command and move accordingly
+			case 'U':
+				currentY += currentSpeed;
+				break;
+			case 'D':
+				currentY -= currentSpeed;
+				break;
+			case 'L':
+				currentX -= currentSpeed;
+				break;
+			case 'R':
+				currentX += currentSpeed;
+				break;
+			}
+			//Update the distance traveled based on speed
+			distanceTraveled += currentSpeed;
+			//update lastcommand for the robot unless it was an invalid command!!!
+			lastCommand = direction;
 		}
 		void setName(string newName) {
 			name = newName;
 		}
-}; 
+
+};  
 
 //Name: findRobot
 //Parameters: Array of Robots pointers robotList[], unique identifier name, size of array
@@ -82,35 +107,9 @@ void moveRobot(Robot* robot, char direction) {
 		cout << "Sorry, that was an invalid direction. Please try again" << endl;
 		return;
 	}
-	if (direction == robot->getLastCommand()) {
-		if (robot->getCurrentSpeed() < 4) {
-			robot->getCurrentSpeed() += 1;
-		}
-	}
-	else {
-		robot->getCurrentSpeed() = 1;
-	}
-	switch (toupper(direction)) {
-		//Check the command and move accordingly
-	case 'U':
-		robot->getCurrentY() += robot->getCurrentSpeed();
-		break;
-	case 'D':
-		robot->getCurrentY() -= robot->getCurrentSpeed();
-		break;
-	case 'L':
-		robot->getCurrentX() -= robot->getCurrentSpeed();
-		break;
-	case 'R':
-		robot->getCurrentX() += robot->getCurrentSpeed();
-		break;
-	}
-	//Update the distance traveled based on speed
-	robot->distanceTraveled += robot->currentSpeed;
-	//update lastcommand for the robot unless it was an invalid command!!!
-	robot->lastCommand = direction;
+	robot->move(direction);
 	//Print Robot's location (X, Y)
-	cout << robot->name << "'s current position is: " << "(" << robot->currentX << "," << robot->currentY << ")" << endl;
+	cout << robot->getName() << "'s current position is: " << "(" << robot->getCurrentX() << "," << robot->getCurrentY() << ")" << endl;
 }
 
 void sortRobotList(Robot** robotList, int arraySize) {
@@ -118,7 +117,7 @@ void sortRobotList(Robot** robotList, int arraySize) {
 	for (int i = 0; i < arraySize - 1; i++) {
 		int maxIndex = i;
 		for (int j = i; j < arraySize; j++) {
-			if (robotList[j]->distanceTraveled > robotList[maxIndex]->distanceTraveled) {
+			if (robotList[j]->getDistanceTraveled() > robotList[maxIndex]->getDistanceTraveled()) {
 				maxIndex = j;
 			}
 		}
@@ -158,7 +157,7 @@ int main()
 	for (int i = 0; i < arraySize; i++) {
 		string robotName;
 		cin >> robotName;
-		robotList[i]->name = robotName;
+		robotList[i]->setName(robotName);
 	}
 
 	//While the user has not entered Q
@@ -186,9 +185,9 @@ int main()
 				//While the user wants to move display the movement options
 				cout << "Great! We are moving the Robot " << robotIdentifier << endl;
 				//Displaying the current pos for the target robot
-				cout << robotList[robotIndex]->name << "'s current position is "
-					<< "(" << robotList[robotIndex]->currentX << ","
-					<< robotList[robotIndex]->currentY << ")" << endl;
+				cout << robotList[robotIndex]->getName() << "'s current position is "
+					<< "(" << robotList[robotIndex]->getCurrentX() << ","
+					<< robotList[robotIndex]->getCurrentY() << ")" << endl;
 				//Menu for moving the robot
 				cout << "Here are your options to move the Robot: " << endl
 					<< "U - Move the Robot up" << endl
@@ -207,7 +206,7 @@ int main()
 			//Sort robotList first
 			sortRobotList(robotList, arraySize);
 			for_each(robotList, robotListEnd, [](Robot* robot) {
-				cout << robot->name << " " << robot->distanceTraveled << endl;
+				cout << robot->getName() << " " << robot->getDistanceTraveled() << endl;
 				});
 
 			break;
